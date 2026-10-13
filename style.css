@@ -66,10 +66,6 @@ the full width of mobile browser viewport
     color: var(--muted);
 }
 
-/* Header */
-.head {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-}
 
 #header-img {
     width: 100%;
@@ -290,7 +286,13 @@ button:hover {
     background: var(--secondary);
 }
 
+.content section + section {
+    margin-top: 30px;
+}
 
+.content section {
+    scroll-margin-top: 20px;
+}
 
 .menu-card {
     flex: 1 1 0;
