@@ -1,23 +1,29 @@
 /* =========================================================
-Lab 4 - style.css starter
-Focus: CSS Grid & Nested Layouts
+   Lab 4 - Campus Café
+   Focus: CSS Grid, Flexbox and Responsive Design
 ========================================================= */
+
 /* TODO (CSS #1):
 - Complete the color palette (change values only)
-- Choose a warm café theme
+- Choose a warm café theme 
+IT WILL BE PINK
 */
 :root {
-    --bg: ;
-    --panel: ;
-    --text: ;
-    --muted: ;
-    --border: ;
-    --accent: ;
+    --bg: #fff0f7;
+    --panel: #fffafd;
+    --text: #48234f;
+    --muted: #896c91;
+    --border: #edc6e6;
+    --accent: #c13c91;
     --radius: 16px;
 }
 
 * {
     box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
@@ -52,11 +58,17 @@ the full width of mobile browser viewport
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
-    Page 5 of 12
+    min-width: 0;
+    box-shadow: 0 5px 18px rgba(120, 48, 105, 0.07);
 }
 
 .muted {
     color: var(--muted);
+}
+
+/* Header */
+.head {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
 }
 
 #header-img {
@@ -79,7 +91,10 @@ a {
 - You will then alter to horizontal stacking for different modes
 */
 .menu-flex {
-    /* add properties here */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 18px;
 }
 
 article {
@@ -110,11 +125,15 @@ button {
     background: #fff;
 }
 
+button:hover {
+    background: var(--primary);
+    transform: translateY(-1px);
+}
+
 #calcBtn {
     background: var(--accent);
     color: #fff;
     border-color: rgba(0, 0, 0, 0.2);
-    Page 6 of 12
 }
 
 #receipt {
@@ -137,49 +156,175 @@ button {
     margin-top: 8px;
 }
 
-/* Responsive design breakpoints:
-- Use the media queries below to explicitly place grid items
-- Mobile Mode: 1 column (default)
-- Tablet Mode: 2 columns
-- Laptop Mode: 2 or 3 columns
-- Desktop Mode: 3 columns
-- You will need to use grid-column and grid-row properties to place items in the grid
-- Other options are grid-column-start, grid-column-end, grid-row-start and grid-row-end
-- You will need to use flexbox properties to change the stacking of articles in the
-menu-flex container
-- You can also make the nav panel into a flexbox if it aids your design
-Additional Requirements:
-- Make sure the receipt NEVER breaks for any viewport width of 500px or greater.
-- Header must always span the full width (12 grid columns) of the first grid row.
-- Footer does not always have to span the full width of the last grid row but it must
-always be a part of the last grid row.
-- Besides that, you are free to choose the number of rows you would like to use for
-each mode. Whatever works best for your design.
-*/
-/* TODO (CSS #3): Tablet Mode
-- Must have 2 visible columns
-- You decide articles stacking (vertical or horizontal)
-- Receipt must not break
-*/
+/* CSS #3: Tablet - 2 visible columns */
 @media (min-width: 768px) {
-    /* add properties here */
+    .nav {
+        grid-column: 1 / 5;
+    }
+
+    .content {
+        grid-column: 5 / -1;
+    }
+
+    .sidebar {
+        grid-column: 1 / 7;
+    }
+
+    .ads {
+        grid-column: 7 / -1;
+    }
+
+    .footer {
+        grid-column: 1 / -1;
+    }
+
+    .menu-flex {
+        flex-direction: column;
+    }
 }
 
-/* TODO (CSS #4): Laptop Mode
-- Must have 2 or 3 visible columns (you decide)
-- You decide articles stacking (vertical or horizontal)
-- Receipt must not break
-- Cannot be exactly the same as tablet mode. At least 1 grid item property must be different
-*/
-Page 7 of 12 @media (min-width: 992px) {
-    /* add properties here */
+/* CSS #4: Laptop - 2 visible columns, different placement */
+@media (min-width: 992px) {
+    .nav {
+        grid-column: 1 / 4;
+    }
+
+    .content {
+        grid-column: 4 / -1;
+    }
+
+    .sidebar {
+        grid-column: 1 / 8;
+    }
+
+    .ads {
+        grid-column: 8 / -1;
+    }
+
+    .menu-flex {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .menu-card {
+        flex-basis: calc(50% - 8px);
+    }
 }
 
-/* TODO (CSS #5): Desktop Mode
-- Must have 3 visible columns
-- Articles must be stacked horizontally
-- Receipt must not break
-*/
+/* CSS #5: Desktop - 3 visible columns */
 @media (min-width: 1200px) {
-    /* add properties here */
+    .nav {
+        grid-column: 1 / 4;
+        grid-row: 2 / 4;
+    }
+
+    .content {
+        grid-column: 4 / 10;
+        grid-row: 2 / 4;
+    }
+
+    .sidebar {
+        grid-column: 10 / -1;
+        grid-row: 2;
+    }
+
+    .ads {
+        grid-column: 10 / -1;
+        grid-row: 3;
+    }
+
+    .head {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .footer {
+        grid-column: 1 / -1;
+        grid-row: 4;
+    }
+
+    .menu-flex {
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .menu-card {
+        flex: 1 1 0;
+        padding: 12px;
+    }
+
+    #receipt {
+        font-size: 0.66rem;
+    }
+}
+
+
+
+/* Some bonus UI I put in */
+
+/* Navigation */
+.nav {
+    background: var(--panel);
+    
+}
+
+.nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav a {
+    display: block;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+}
+
+.nav a:hover {
+    background: var(--secondary);
+}
+
+
+
+.menu-card {
+    flex: 1 1 0;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    background: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 16px rgba(120, 48, 105, 0.12);
+}
+
+.menu-card h3 {
+    margin-top: 0;
+}
+
+.menu-card p:not(.price) {
+    margin-top: 0;
+}
+
+
+/* Feeter */
+.footer {
+    background: var(--primary);
+    text-align: center;
+}
+
+.footer p {
+    margin: 4px 0;
 }

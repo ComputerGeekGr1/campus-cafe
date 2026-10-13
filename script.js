@@ -1,62 +1,117 @@
 /* =========================================================
-Lab 4 - script.js starter
-Focus: JavaScript Fundamentals
+   Lab 4 - script.js
+   Focus: JavaScript Fundamentals
 ========================================================= */
-const PRICES = { coffee: 3.25, sandwich: 8.50, salad: 7.25 };
+
+const PRICES = {
+    coffee: 3.25,
+    sandwich: 8.50,
+    salad: 7.25
+};
+
 const TAX_RATE = 0.05;
 const STUDENT_RATE = 0.10;
 const ECO_FEE = 1.00;
 const BULK_QTY = 6;
 const BULK_OFF = 2.00;
+
 function money(n) {
     return `$${n.toFixed(2)}`;
 }
+
 /* TODO (JS #1):
 - return trimmed + lowercase string
 - handle cancel/empty safely
 - if raw is null, it should return an empty string to avoid errors on .trim()
 */
 function normalizeType(raw) {
-    /* Add JS code here */
+    if (raw === null) {
+        return "";
+    }
+
+    return raw.trim().toLowerCase();
 }
+
 /* TODO (JS #2):
 - return true only for "coffee", "sandwich", "salad"
 */
 function isValidType(t) {
-    /* Add JS code here */
+    return t === "coffee" ||
+        t === "sandwich" ||
+        t === "salad";
 }
+
 /* TODO (JS #3):
 - use a for loop to repeat an icon up to 10 times
 - append the icons into the icons variable
 - should add a line break and an indentation after every 3 icons
 */
+// The question mark emoji from the handout wouldn't copy over, so I used eyes instead
 function iconsFor(type, qty) {
-    const map = { coffee: " ", sandwich: " ", salad: " " };
-    const icon = map[type] || " ";
+    const map = {
+        coffee: "☕",
+        sandwich: "🥪",
+        salad: "🥗"
+    };
+
+    const icon = map[type] || "👀";
     const cap = Math.min(qty, 10);
     let icons = "";
-Page 8 of 12
-    // for (...) {
-    // ...
-    // icons += icon;
-    // }
+
+    for (let i = 1; i <= cap; i++) {
+        icons += icon;
+
+        // Add a line break and indentation after every 3 icons except after the final icon.
+        if (i % 3 === 0 && i < cap) {
+            icons += "\n  ";
+        } else if (i < cap) {
+            icons += " ";
+        }
+    }
+
     return icons;
 }
+
 /* TODO (JS #4):
 - Implement full math rules
 - unitPrice line is provided
 */
 function processQuote(type, qty, isStudent, reusableCup) {
     const unitPrice = PRICES[type];
-    // subtotal = unit price × quantity
-    // studentDiscount = 10% (STUDENT_RATE) of subtotal if isStudent
-    // ecoFee = ECO_FEE only if type is coffee AND reusableCup is false
-    // bulkDiscount = BULK_OFF only if qty >= BULK_QTY
-    // taxableAmount = subtotal - studentDiscount + ecoFee - bulkDiscount
-    // tax = 5% (TAX_RATE) of taxableAmount
-    // total = taxableAmount + tax
-    return { unitPrice, subtotal, studentDiscount, ecoFee, bulkDiscount, tax, total };
-};
+
+    const subtotal = unitPrice * qty;
+
+    const studentDiscount = isStudent
+        ? subtotal * STUDENT_RATE
+        : 0;
+
+    const ecoFee = (type === "coffee" && !reusableCup)
+        ? ECO_FEE
+        : 0;
+
+    const bulkDiscount = qty >= BULK_QTY
+        ? BULK_OFF
+        : 0;
+
+    const taxableAmount =
+        subtotal - studentDiscount + ecoFee - bulkDiscount;
+
+    const tax = taxableAmount * TAX_RATE;
+
+    const total = taxableAmount + tax;
+
+    return {
+        unitPrice,
+        subtotal,
+        studentDiscount,
+        ecoFee,
+        bulkDiscount,
+        tax,
+        total
+    };
+}
+
+
 function buildReceipt(type, qty, isStudent, reusableCup, calc) {
     const icons = iconsFor(type, qty);
     const studentText = isStudent ? "Yes" : "No";
@@ -76,20 +131,25 @@ Bulk deal: -${money(calc.bulkDiscount)}
 Tax (5%): ${money(calc.tax)}
 ------------------------
 TOTAL: ${money(calc.total)}`;
-}
+};
+
+
 /* TODO (JS #5):
 - Show a clear error in #receipt
 */
 function showError(msg) {
-    /* Add JS code here */
+    const receipt = document.getElementById("receipt");
+    receipt.textContent = `Unable to create quote.\n\nError: ${msg}`;
 }
+
 /* TODO (JS #6):
 - Reset #receipt to "No order data."
 */
 function resetUI() {
-    /* Add JS code here */
+    document.getElementById("receipt").textContent = "No order data.";
 }
-Page 9 of 12
+
+/* Load weather using Open-Meteo */
 async function loadWeather() {
     const box = document.getElementById("weatherBox");
     const url =
@@ -107,34 +167,68 @@ async function loadWeather() {
         box.textContent = "Weather unavailable.";
     }
 }
+
+
+
+
 function main() {
     loadWeather();
     resetUI();
+
     document.getElementById("calcBtn").addEventListener("click", () => {
-        const type = normalizeType(prompt("Enter item type: coffee / sandwich / salad"));
+        const type = normalizeType(
+            prompt("Enter item type: coffee / sandwich / salad")
+        );
+
         if (!isValidType(type)) {
             showError("Item must be coffee, sandwich, or salad.");
             return;
         }
+
+        // Get quantity and convert to number
         const qty = Number(prompt("Enter quantity (1–10):"));
+
         /* TODO (JS #7):
         - Add quantity validation here
         - must be an integer
         - must be between 1 and 10
         - if invalid: showError(...) and stop
         */
+        if (!Number.isInteger(qty) || qty < 1 || qty > 10) {
+            showError("Quantity must be a whole number between 1 and 10.");
+            return;
+        }
+
         /* TODO (JS #8):
         - Add a confirm() dialog here to ask for student discounts
         - Store the result in a variable named isStudent
         */
-        const reusableCup = (type === "coffee") ?
-            confirm("Brought reusable cup(s)? (+$1.00 otherwise)") : true;
-        const calc = processQuote(type, qty, isStudent, reusableCup);
+        const isStudent = confirm(
+            "Are you a student? Click OK for yes and a 10% student discount!."
+        );
+
+        // Ask about a reusable cup for coffee orders only.
+        const reusableCup = type === "coffee"
+            ? confirm("Brought reusable cup(s)? (+$1.00 otherwise).")
+            : true;
+
+
+        const calc = processQuote(
+            type,
+            qty,
+            isStudent,
+            reusableCup
+        );
+
         document.getElementById("receipt").textContent =
             buildReceipt(type, qty, isStudent, reusableCup, calc);
     });
+
+
+
     document.getElementById("resetBtn").addEventListener("click", () => {
         resetUI();
     });
 }
+
 main();
